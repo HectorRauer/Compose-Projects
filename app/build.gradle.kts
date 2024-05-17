@@ -1,20 +1,19 @@
 plugins {
-    alias(libs.plugins.journey.android.application)
+    alias(libs.plugins.journey.android.application.compose)
     alias(libs.plugins.journey.jvm.ktor)
     alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
     namespace = "com.example.journey"
-    compileSdk = 34
 
     defaultConfig {
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
     }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -62,24 +61,19 @@ dependencies {
     // Timber
     implementation(libs.timber)
 
-    // Core
     implementation(projects.core.presentation.designsystem)
     implementation(projects.core.presentation.ui)
     implementation(projects.core.domain)
     implementation(projects.core.data)
     implementation(projects.core.database)
 
-    // Auth
     implementation(projects.auth.presentation)
     implementation(projects.auth.domain)
     implementation(projects.auth.data)
 
-    // Run
     implementation(projects.run.presentation)
     implementation(projects.run.domain)
     implementation(projects.run.data)
     implementation(projects.run.location)
     implementation(projects.run.network)
-
-
 }

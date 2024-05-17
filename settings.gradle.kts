@@ -1,7 +1,7 @@
 pluginManagement {
     includeBuild("build-logic")
     repositories {
-        google ()
+        google()
         mavenCentral()
         gradlePluginPortal()
     }
@@ -14,9 +14,8 @@ dependencyResolutionManagement {
     }
 }
 
+rootProject.name = "journey"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
-
-rootProject.name = "Journey"
 include(":app")
 include(":auth:data")
 include(":auth:domain")
