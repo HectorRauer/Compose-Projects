@@ -66,7 +66,7 @@ val LockIcon: ImageVector
 
 val LogoIcon: ImageVector
     @Composable
-    get() = ImageVector.vectorResource(id = R.drawable.logo)
+    get() = ImageVector.vectorResource(id = R.drawable.journey)
 
 val LogoutIcon: ImageVector
     @Composable

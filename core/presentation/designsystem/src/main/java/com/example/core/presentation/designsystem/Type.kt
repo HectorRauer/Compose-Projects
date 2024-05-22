@@ -36,7 +36,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         lineHeight = 20.sp,
-        color = journeyGray
+        color = JourneyGray
     ),
     bodyMedium = TextStyle(
         fontFamily = Poppins,
@@ -61,6 +61,6 @@ val Typography = Typography(
         fontFamily = Poppins,
         fontWeight = FontWeight.SemiBold,
         fontSize = 24.sp,
-        color = journeyWhite
+        color = JourneyWhite
     ),
 )

@@ -9,16 +9,16 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 val DarkColorScheme = darkColorScheme(
-    primary = journeyGreen,
-    background = journeyBlack,
-    surface = journeyDarkGray,
-    secondary = journeyWhite,
-    tertiary = journeyWhite,
-    primaryContainer = journeyGreen30,
-    onPrimary = journeyBlack,
-    onBackground = journeyWhite,
-    onSurface = journeyWhite,
-    onSurfaceVariant = journeyGray
+    primary = JourneyGreen,
+    background = JourneyBlack,
+    surface = JourneyDarkGray,
+    secondary = JourneyWhite,
+    tertiary = JourneyWhite,
+    primaryContainer = JourneyGreen30,
+    onPrimary = JourneyBlack,
+    onBackground = JourneyWhite,
+    onSurface = JourneyWhite,
+    onSurfaceVariant = JourneyGray
 )
 
 @Composable
