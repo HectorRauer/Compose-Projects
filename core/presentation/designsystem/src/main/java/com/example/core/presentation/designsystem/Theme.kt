@@ -18,7 +18,8 @@ val DarkColorScheme = darkColorScheme(
     onPrimary = JourneyBlack,
     onBackground = JourneyWhite,
     onSurface = JourneyWhite,
-    onSurfaceVariant = JourneyGray
+    onSurfaceVariant = JourneyGray,
+    error = JourneyDarkRed
 )
 
 @Composable
