@@ -45,6 +45,7 @@ import com.example.core.presentation.designsystem.components.JourneyPasswordText
 import com.example.core.presentation.designsystem.components.JourneyTextField
 import org.koin.androidx.compose.koinViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegisterScreenRoot(
     onSignInClick: () -> Unit,

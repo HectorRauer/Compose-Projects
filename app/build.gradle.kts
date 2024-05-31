@@ -25,6 +25,9 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    //Koin
+    implementation(libs.bundles.koin)
+
     // Compose
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.material.icons.extended)
