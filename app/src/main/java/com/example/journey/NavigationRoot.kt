@@ -1,5 +1,6 @@
 package com.example.journey
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -43,7 +44,13 @@ private fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     }
                     restoreState = true
                 } },
-                onSuccessfulRegistration = { navController.navigate("login") })
+                onSuccessfulRegistration = { 
+                    navController.navigate("login")
+                }
+            )
+        }
+        composable("login"){
+            Text(text = "login")
         }
     }
 }

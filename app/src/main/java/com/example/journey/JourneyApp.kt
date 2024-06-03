@@ -3,6 +3,7 @@ package com.example.journey
 import android.app.Application
 import com.example.auth.data.di.authDataModule
 import com.example.auth.presentation.di.authViewModelModule
+import com.example.core.data.di.coreDataModule
 import com.example.journey.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -22,7 +23,8 @@ class JourneyApp: Application() {
             modules(
                 authDataModule,
                 authViewModelModule,
-                appModule
+                appModule,
+                coreDataModule
             )
         }
     }
