@@ -32,13 +32,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.auth.domain.PasswordValidationState
 import com.example.auth.domain.UserDataValidator
 import com.example.auth.presentation.R
 import com.example.core.presentation.designsystem.CheckIcon
 import com.example.core.presentation.designsystem.CrossIcon
 import com.example.core.presentation.designsystem.EmailIcon
 import com.example.core.presentation.designsystem.JourneyDarkRed
-import com.example.core.presentation.designsystem.JourneyGray
 import com.example.core.presentation.designsystem.JourneyGreen
 import com.example.core.presentation.designsystem.JourneyTheme
 import com.example.core.presentation.designsystem.Poppins
@@ -48,20 +48,16 @@ import com.example.core.presentation.designsystem.components.JourneyPasswordText
 import com.example.core.presentation.designsystem.components.JourneyTextField
 import com.example.core.presentation.ui.ObserveAsEvents
 import org.koin.androidx.compose.koinViewModel
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegisterScreenRoot(
     onSignInClick: () -> Unit,
     onSuccessfulRegistration: () -> Unit,
-    viewModel: RegisterViewModel = koinViewModel()
+    viewModel: RegisterViewModel = koinViewModel(),
 ) {
-
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
-
     ObserveAsEvents(viewModel.events) { event ->
-        when(event){
+        when(event) {
             is RegisterEvent.Error -> {
                 keyboardController?.hide()
                 Toast.makeText(
@@ -80,22 +76,18 @@ fun RegisterScreenRoot(
                 onSuccessfulRegistration()
             }
         }
-
     }
+
     RegisterScreen(
         state = viewModel.state,
         onAction = viewModel::onAction
-
     )
-
 }
 
 @Composable
-
 private fun RegisterScreen(
     state: RegisterState,
     onAction: (RegisterAction) -> Unit
-
 ) {
     GradientBackground {
         Column(
@@ -110,12 +102,11 @@ private fun RegisterScreen(
                 text = stringResource(id = R.string.create_account),
                 style = MaterialTheme.typography.headlineMedium
             )
-
             val annotatedString = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
                         fontFamily = Poppins,
-                        color = JourneyGray
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 ) {
                     append(stringResource(id = R.string.already_have_an_account) + " ")
@@ -133,7 +124,6 @@ private fun RegisterScreen(
                         append(stringResource(id = R.string.login))
                     }
                 }
-
             }
             ClickableText(
                 text = annotatedString,
@@ -163,60 +153,74 @@ private fun RegisterScreen(
             Spacer(modifier = Modifier.height(16.dp))
             JourneyPasswordTextField(
                 state = state.password,
-                hint = stringResource(id = R.string.password),
-                title = stringResource(id = R.string.password),
                 isPasswordVisible = state.isPasswordVisible,
                 onTogglePasswordVisibility = {
                     onAction(RegisterAction.OnTogglePasswordVisibilityClick)
                 },
+                hint = stringResource(id = R.string.password),
+                title = stringResource(id = R.string.password),
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             PasswordRequirement(
                 text = stringResource(
-                    id = R.string.at_least_x_characters, UserDataValidator.MIN_PASSWORD_LENGTH),
+                    id = R.string.at_least_x_characters,
+                    UserDataValidator.MIN_PASSWORD_LENGTH
+                ),
                 isValid = state.passwordValidationState.hasMinLength
             )
             Spacer(modifier = Modifier.height(4.dp))
             PasswordRequirement(
-                text = stringResource(id = R.string.at_least_one_number),
-                isValid =state.passwordValidationState.hasNumber
+                text = stringResource(
+                    id = R.string.at_least_one_number,
+                ),
+                isValid = state.passwordValidationState.hasNumber
             )
             Spacer(modifier = Modifier.height(4.dp))
-            PasswordRequirement(text = stringResource(id = R.string.contains_lowercase_character),
-                isValid = state.passwordValidationState.hasLowerCaseCharacter)
+            PasswordRequirement(
+                text = stringResource(
+                    id = R.string.contains_lowercase_character,
+                ),
+                isValid = state.passwordValidationState.hasLowerCaseCharacter
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            PasswordRequirement(text = stringResource(id = R.string.contains_uppercase_character),
-                isValid =  state.passwordValidationState.hasUpperCaseCharacter
+            PasswordRequirement(
+                text = stringResource(
+                    id = R.string.contains_uppercase_character,
+                ),
+                isValid = state.passwordValidationState.hasUpperCaseCharacter
             )
             Spacer(modifier = Modifier.height(32.dp))
             JourneyActionButton(
                 text = stringResource(id = R.string.register),
-                isLoading = state.isResgistering,
+                isLoading = state.isRegistering,
                 enabled = state.canRegister,
                 modifier = Modifier.fillMaxWidth(),
-                onCLick = {
+                onClick = {
                     onAction(RegisterAction.OnRegisterClick)
                 }
             )
         }
     }
-
 }
 
 @Composable
 fun PasswordRequirement(
-    modifier: Modifier = Modifier,
     text: String,
     isValid: Boolean,
-
-    ) {
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            imageVector = if (isValid) CheckIcon else CrossIcon,
+            imageVector = if (isValid) {
+                CheckIcon
+            } else {
+                CrossIcon
+            },
             contentDescription = null,
             tint = if(isValid) JourneyGreen else JourneyDarkRed
         )
@@ -232,15 +236,14 @@ fun PasswordRequirement(
 @Preview
 @Composable
 private fun RegisterScreenPreview() {
-
     JourneyTheme {
-
         RegisterScreen(
-            state = RegisterState(),
+            state = RegisterState(
+                passwordValidationState = PasswordValidationState(
+                    hasNumber = true,
+                )
+            ),
             onAction = {}
-
         )
-
     }
-
 }

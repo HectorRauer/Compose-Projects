@@ -39,7 +39,7 @@ class RegisterViewModel(
                 state = state.copy(
                     isEmailValid = isValidEmail,
                     canRegister = isValidEmail && state.passwordValidationState.isValidPassword
-                            && !state.isResgistering
+                            && !state.isRegistering
                 )
             }.launchIn(viewModelScope)
 
@@ -49,7 +49,7 @@ class RegisterViewModel(
                 state = state.copy(
                     passwordValidationState = passwordValidationState,
                     canRegister = state.isEmailValid && passwordValidationState.isValidPassword
-                            && !state.isResgistering
+                            && !state.isRegistering
                 )
             }.launchIn(viewModelScope)
     }
@@ -68,12 +68,12 @@ class RegisterViewModel(
 
     private fun register(){
         viewModelScope.launch {
-            state = state.copy(isResgistering = true)
+            state = state.copy(isRegistering = true)
             val result  = repository.register(
                 email = state.email.text.toString().trim(),
                 password = state.password.text.toString()
             )
-            state = state.copy(isResgistering = false)
+            state = state.copy(isRegistering = false)
 
             when(result){
                 is Result.Error -> {

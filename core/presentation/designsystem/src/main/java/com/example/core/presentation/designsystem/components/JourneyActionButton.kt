@@ -27,12 +27,12 @@ import com.example.core.presentation.designsystem.JourneyGray
 fun JourneyActionButton(
     text: String,
     isLoading: Boolean,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onCLick: () -> Unit
+    onClick: () -> Unit
 ) {
         Button(
-            onClick = onCLick,
+            onClick = onClick,
             enabled = enabled,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary,

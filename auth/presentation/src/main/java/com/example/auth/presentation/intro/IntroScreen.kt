@@ -3,7 +3,6 @@ package com.example.auth.presentation.intro
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -82,7 +81,7 @@ fun IntroScreen(
             JourneyActionButton(text = stringResource(id = R.string.sign_up),
                 isLoading = false,
                 modifier = Modifier.fillMaxWidth(),
-                onCLick = {
+                onClick = {
                     onAction(IntroAction.onSignUpClick)
                 }
             )
