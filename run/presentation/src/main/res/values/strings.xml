@@ -3,4 +3,10 @@
     <string name="journey">Journey</string>
     <string name="analytics">Analytics</string>
     <string name="logout">Log out</string>
+    <string name="active_run">Active Run</string>
+    <string name="pause_run">Pause run</string>
+    <string name="start_run">Start run</string>
+    <string name="duration">Duration</string>
+    <string name="distance">Distance</string>
+    <string name="pace">Pace</string>
 </resources>

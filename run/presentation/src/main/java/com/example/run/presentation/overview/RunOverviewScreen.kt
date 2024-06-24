@@ -3,7 +3,6 @@
 package com.example.run.presentation.overview
 
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,10 +27,17 @@ import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun RunOverviewScreenRoot(
+    onStartRunClick: () -> Unit,
     viewModel: RunOverviewViewModel = koinViewModel()
 ) {
     RunOverviewScreen(
-        onAction = {}
+        onAction = { action ->
+            when(action){
+                RunOverviewAction.OnStartRunClick -> onStartRunClick()
+                else -> Unit
+            }
+            viewModel.onAction(action)
+        }
     )
 }
 
@@ -81,7 +87,7 @@ private fun RunOverviewScreen(
         floatingActionButton = {
             JourneyFloatingActionButton(
                 icon = RunIcon,
-                onClick = { onAction(RunOverviewAction.OnStartRun)})
+                onClick = { onAction(RunOverviewAction.OnStartRunClick)})
         }
     ) { paddingValues ->
 
