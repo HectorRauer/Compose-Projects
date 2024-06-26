@@ -69,7 +69,7 @@ fun JourneyActionButton(
 fun JourneyOutlinedActionButton(
     text: String,
     isLoading: Boolean,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onCLick: () -> Unit
 ) {

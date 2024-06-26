@@ -1,5 +1,12 @@
 package com.example.run.presentation.active_run
 
+import android.Manifest
+import android.content.Context
+import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,18 +15,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.core.presentation.designsystem.JourneyTheme
 import com.example.core.presentation.designsystem.StartIcon
 import com.example.core.presentation.designsystem.StopIcon
+import com.example.core.presentation.designsystem.components.JourneyDialog
 import com.example.core.presentation.designsystem.components.JourneyFloatingActionButton
+import com.example.core.presentation.designsystem.components.JourneyOutlinedActionButton
 import com.example.core.presentation.designsystem.components.JourneyScaffold
 import com.example.core.presentation.designsystem.components.JourneyToolbar
 import com.example.run.presentation.R
 import com.example.run.presentation.active_run.components.RunDataCard
+import com.example.run.presentation.util.hasLocationPermission
+import com.example.run.presentation.util.hasNotificationPermission
+import com.example.run.presentation.util.shouldShowLocationPermissionRationale
+import com.example.run.presentation.util.shouldShowNotificationPermissionRationale
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -38,6 +53,58 @@ private fun ActiveRunScreen(
     state: ActiveRunState,
     onAction: (ActiveRunAction) -> Unit
 ) {
+    val context = LocalContext.current
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { perms ->
+        val hasCoarseLocationPermission = perms[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        val hasFineLocationPermission = perms[Manifest.permission.ACCESS_FINE_LOCATION] == true
+        val hasNotificationPermission = if (Build.VERSION.SDK_INT >= 33) {
+            perms[Manifest.permission.POST_NOTIFICATIONS] == true
+        } else true
+        val activity = context as ComponentActivity
+        val showLocationRationale = activity.shouldShowLocationPermissionRationale()
+        val showNotificationRationale = activity.shouldShowNotificationPermissionRationale()
+
+        onAction(
+            ActiveRunAction.SubmitLocationPermissionInfo(
+                acceptedLocationPermission = hasCoarseLocationPermission && hasFineLocationPermission,
+                showLocationRationale = showLocationRationale
+            )
+        )
+
+        onAction(
+            ActiveRunAction.SubmitNotificationPermissionInfo(
+                acceptedNotificationPermission = hasNotificationPermission,
+                showNotificationRationale = showNotificationRationale
+            )
+        )
+    }
+
+    LaunchedEffect(key1 = true) {
+        val activity = context as ComponentActivity
+        val showLocationRationale = activity.shouldShowLocationPermissionRationale()
+        val showNotificationRationale = activity.shouldShowNotificationPermissionRationale()
+
+        onAction(
+            ActiveRunAction.SubmitLocationPermissionInfo(
+                acceptedLocationPermission = context.hasLocationPermission(),
+                showLocationRationale = showLocationRationale
+            )
+        )
+
+        onAction(
+            ActiveRunAction.SubmitNotificationPermissionInfo(
+                acceptedNotificationPermission = context.hasNotificationPermission(),
+                showNotificationRationale = showNotificationRationale
+            )
+        )
+
+        if (!showLocationRationale && !showNotificationRationale) {
+            permissionLauncher.requestJourneyPermissions(context)
+        }
+    }
+
     JourneyScaffold(
         withGradient = false,
         topAppBar = {
@@ -59,7 +126,7 @@ private fun ActiveRunScreen(
                 },
                 onClick = { onAction(ActiveRunAction.OnToggleRunClick) },
                 iconSize = 20.dp,
-                contentDescription = if (state.shouldTrack){
+                contentDescription = if (state.shouldTrack) {
                     stringResource(id = R.string.pause_run)
                 } else {
                     stringResource(id = R.string.start_run)
@@ -78,9 +145,60 @@ private fun ActiveRunScreen(
                 modifier = Modifier
                     .padding(16.dp)
                     .padding(padding)
-                    .fillMaxWidth())
+                    .fillMaxWidth()
+            )
         }
 
+    }
+
+    if (state.showLocationRationale || state.showNotificationRationale) {
+        JourneyDialog(
+            title = stringResource(id = R.string.permission_required),
+            onDismiss = { /* Normal dismissing not allowed for permissions*/ },
+            description = when {
+                state.showLocationRationale && state.showNotificationRationale -> {
+                                   stringResource(id = R.string.location_notification_rationale)
+                }
+                state.showLocationRationale -> {
+                    stringResource(id = R.string.location_rationale)
+                }
+                else -> {
+                    stringResource(id = R.string.notification_rationale)
+                }
+            },
+            primaryButton = {
+                JourneyOutlinedActionButton(
+                    text = stringResource(id = R.string.okay),
+                    isLoading = false,
+                    onCLick = {
+                        onAction(ActiveRunAction.DismissRationaleDialog)
+                        permissionLauncher.requestJourneyPermissions(context)
+                    }
+                )
+            }
+        )
+    }
+}
+
+private fun ActivityResultLauncher<Array<String>>.requestJourneyPermissions(context: Context) {
+    val hasLocationPermission = context.hasLocationPermission()
+    val hasNotificationPermission = context.hasNotificationPermission()
+
+    val locationPermission = arrayOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+    )
+
+    val notificationPermission = if (Build.VERSION.SDK_INT >= 33) {
+        arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+    } else arrayOf()
+
+    when {
+        !hasLocationPermission && !hasNotificationPermission -> {
+            launch(locationPermission + notificationPermission)
+        }
+        !hasLocationPermission -> launch(locationPermission)
+        !hasNotificationPermission -> launch(notificationPermission)
     }
 }
 
