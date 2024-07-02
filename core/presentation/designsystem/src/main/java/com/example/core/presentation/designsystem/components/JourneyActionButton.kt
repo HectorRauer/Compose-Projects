@@ -71,10 +71,10 @@ fun JourneyOutlinedActionButton(
     isLoading: Boolean,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onCLick: () -> Unit
+    onClick: () -> Unit
 ) {
     OutlinedButton(
-        onClick = onCLick,
+        onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onBackground,
