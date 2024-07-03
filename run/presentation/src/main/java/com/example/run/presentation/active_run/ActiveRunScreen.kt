@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.example.core.presentation.designsystem.JourneyTheme
 import com.example.core.presentation.designsystem.StartIcon
 import com.example.core.presentation.designsystem.StopIcon
+import com.example.core.presentation.designsystem.components.JourneyActionButton
 import com.example.core.presentation.designsystem.components.JourneyDialog
 import com.example.core.presentation.designsystem.components.JourneyFloatingActionButton
 import com.example.core.presentation.designsystem.components.JourneyOutlinedActionButton
@@ -157,6 +158,37 @@ private fun ActiveRunScreen(
                     .fillMaxWidth()
             )
         }
+    }
+
+    if (!state.shouldTrack && state.hasStartedRunning) {
+        JourneyDialog(
+            title = stringResource(id = R.string.runnning_is_paused),
+            onDismiss = { 
+                onAction(ActiveRunAction.OnResumeRunClick)
+                        },
+            description = stringResource(id = R.string.resume_or_finish_run),
+            primaryButton = {
+                JourneyActionButton(
+                    text = stringResource(id = R.string.resume),
+                    isLoading = false,
+                    onClick = {
+                        onAction(ActiveRunAction.OnResumeRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            },
+            secondaryButton = {
+                JourneyOutlinedActionButton(
+                    text = stringResource(id = R.string.finish),
+                    isLoading = state.isSavingRun,
+                    onClick = {
+                        onAction(ActiveRunAction.OnFinishRunClick)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+        )
     }
 
     if (state.showLocationRationale || state.showNotificationRationale) {
