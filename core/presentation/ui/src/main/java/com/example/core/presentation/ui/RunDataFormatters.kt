@@ -27,7 +27,15 @@ fun Duration.toFormattedPace(distanceKm: Double): String {
 }
 
 fun Double.toFormattedKilometers(): String {
-    return "${this.roundToDecimals(1)} km"
+    return "${roundToDecimals(1)} km"
+}
+
+fun Int.toFormattedMeters(): String {
+    return "$this m"
+}
+
+fun Double.toFormattedKilometersHour(): String {
+    return "${this.roundToDecimals(1)} km/h"
 }
 
 private fun Double.roundToDecimals(decimalCount: Int): Double {
