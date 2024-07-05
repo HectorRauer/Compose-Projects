@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.journey.android.application.compose)
     alias(libs.plugins.journey.jvm.ktor)
-    alias(libs.plugins.mapsplatform.secrets.plugin)
+
 }
 
 android {

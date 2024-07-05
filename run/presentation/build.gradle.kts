@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.journey.android.feature.ui)
+    alias(libs.plugins.mapsplatform.secrets.plugin)
 }
 
 android {
