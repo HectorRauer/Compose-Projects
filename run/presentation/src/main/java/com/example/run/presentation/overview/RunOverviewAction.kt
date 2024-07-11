@@ -1,7 +1,10 @@
 package com.example.run.presentation.overview
 
- sealed interface RunOverviewAction {
+import com.example.run.presentation.overview.model.RunUi
+
+sealed interface RunOverviewAction {
      data object OnStartRunClick: RunOverviewAction
-     data object onLogoutClick: RunOverviewAction
+     data object OnLogoutClick: RunOverviewAction
      data object OnAnalyticsClick: RunOverviewAction
+     data class DeleteRun(val runUi: RunUi): RunOverviewAction
 }

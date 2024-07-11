@@ -8,6 +8,7 @@ import com.example.core.database.di.databaseModule
 import com.example.journey.di.appModule
 import com.example.run.di.runViewModelModule
 import com.example.run.location.di.locationModule
+import com.example.run.network.di.networkModule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.koin.android.ext.koin.androidContext
@@ -32,9 +33,10 @@ class JourneyApp: Application() {
                 authViewModelModule,
                 appModule,
                 coreDataModule,
-                runViewModelModule,
                 locationModule,
-                databaseModule
+                databaseModule,
+                networkModule,
+                runViewModelModule
             )
         }
     }
