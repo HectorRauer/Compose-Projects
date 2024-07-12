@@ -29,23 +29,20 @@ import java.time.ZonedDateTime
 class ActiveRunViewModel(
     private val runningTracker: RunningTracker,
     private val runRepository: RunRepository
-) : ViewModel() {
+): ViewModel() {
 
-    var state by mutableStateOf(
-        ActiveRunState(
-            shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
-            hasStartedRunning = ActiveRunService.isServiceActive
-        )
-    )
+    var state by mutableStateOf(ActiveRunState(
+        shouldTrack = ActiveRunService.isServiceActive && runningTracker.isTracking.value,
+        hasStartedRunning = ActiveRunService.isServiceActive
+    ))
         private set
 
     private val eventChannel = Channel<ActiveRunEvent>()
     val events = eventChannel.receiveAsFlow()
 
-    private val hasLocationPermission = MutableStateFlow(false)
-
     private val shouldTrack = snapshotFlow { state.shouldTrack }
         .stateIn(viewModelScope, SharingStarted.Lazily, state.shouldTrack)
+    private val hasLocationPermission = MutableStateFlow(false)
 
     private val isTracking = combine(
         shouldTrack,
@@ -54,102 +51,92 @@ class ActiveRunViewModel(
         shouldTrack && hasPermission
     }.stateIn(viewModelScope, SharingStarted.Lazily, false)
 
-
     init {
-        hasLocationPermission.onEach { hasPermission ->
-            if (hasPermission) {
-                runningTracker.startObservingLocation()
-            } else {
-                runningTracker.stopObservingLocation()
+        hasLocationPermission
+            .onEach { hasPermission ->
+                if(hasPermission) {
+                    runningTracker.startObservingLocation()
+                } else {
+                    runningTracker.stopObservingLocation()
+                }
             }
-        }.launchIn(viewModelScope)
+            .launchIn(viewModelScope)
 
         isTracking
             .onEach { isTracking ->
                 runningTracker.setIsTracking(isTracking)
-            }.launchIn(viewModelScope)
+            }
+            .launchIn(viewModelScope)
 
         runningTracker
             .currentLocation
             .onEach {
-                state = state.copy(
-                    currentLocation = it?.location
-                )
-            }.launchIn(viewModelScope)
+                state = state.copy(currentLocation = it?.location)
+            }
+            .launchIn(viewModelScope)
 
         runningTracker
             .runData
             .onEach {
                 state = state.copy(runData = it)
-            }.launchIn(viewModelScope)
+            }
+            .launchIn(viewModelScope)
 
         runningTracker
             .elapsedTime
             .onEach {
-                state = state.copy(
-                    elapsedTime = it
-                )
-            }.launchIn(viewModelScope)
+                state = state.copy(elapsedTime = it)
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onAction(action: ActiveRunAction) {
-        when (action) {
-            ActiveRunAction.OnFinishRunClick -> {}
+        when(action) {
+            ActiveRunAction.OnFinishRunClick -> {
+                state = state.copy(
+                    isRunFinished = true,
+                    isSavingRun = true
+                )
+            }
             ActiveRunAction.OnResumeRunClick -> {
-                state = state.copy(
-                    shouldTrack = true
-                )
+                state = state.copy(shouldTrack = true)
             }
-
             ActiveRunAction.OnBackClick -> {
-                state = state.copy(
-                    shouldTrack = false
-                )
+                state = state.copy(shouldTrack = false)
             }
-
             ActiveRunAction.OnToggleRunClick -> {
                 state = state.copy(
                     hasStartedRunning = true,
                     shouldTrack = !state.shouldTrack
                 )
             }
-
             is ActiveRunAction.SubmitLocationPermissionInfo -> {
                 hasLocationPermission.value = action.acceptedLocationPermission
                 state = state.copy(
                     showLocationRationale = action.showLocationRationale
                 )
             }
-
             is ActiveRunAction.SubmitNotificationPermissionInfo -> {
                 state = state.copy(
                     showNotificationRationale = action.showNotificationRationale
                 )
             }
-
             is ActiveRunAction.DismissRationaleDialog -> {
                 state = state.copy(
                     showNotificationRationale = false,
                     showLocationRationale = false
                 )
             }
-
-            is ActiveRunAction.OnFinishRunClick -> {
-                state = state.copy(
-                    isRunFinished = true,
-                    isSavingRun = true
-                )
-            }
-
             is ActiveRunAction.OnRunProcessed -> {
                 finishRun(action.mapPictureBytes)
             }
+            else -> Unit
         }
     }
 
     private fun finishRun(mapPictureBytes: ByteArray) {
         val locations = state.runData.locations
-        if (locations.isEmpty() || locations.first().size <= 1) {
+        if(locations.isEmpty() || locations.first().size <= 1) {
             state = state.copy(isSavingRun = false)
             return
         }
@@ -158,9 +145,10 @@ class ActiveRunViewModel(
             val run = Run(
                 id = null,
                 duration = state.elapsedTime,
-                dateTimeUtc = ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
+                dateTimeUtc = ZonedDateTime.now()
+                    .withZoneSameInstant(ZoneId.of("UTC")),
                 distanceMeters = state.runData.distanceMeters,
-                location = state.currentLocation ?: Location(lat = 0.0, long = 0.0),
+                location = state.currentLocation ?: Location(0.0, 0.0),
                 maxSpeedKmh = LocationDataCalculator.getMaxSpeedKmh(locations),
                 totalElevationMeters = LocationDataCalculator.getTotalElevationMeters(locations),
                 mapPictureUrl = null
@@ -168,8 +156,7 @@ class ActiveRunViewModel(
 
             runningTracker.finishRun()
 
-            //save run in repository
-            when (val result = runRepository.upsertRun(run, mapPictureBytes)) {
+            when(val result = runRepository.upsertRun(run, mapPictureBytes)) {
                 is Result.Error -> {
                     eventChannel.send(ActiveRunEvent.Error(result.error.asUiText()))
                 }
@@ -184,7 +171,7 @@ class ActiveRunViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        if (!ActiveRunService.isServiceActive) {
+        if(!ActiveRunService.isServiceActive) {
             runningTracker.stopObservingLocation()
         }
     }

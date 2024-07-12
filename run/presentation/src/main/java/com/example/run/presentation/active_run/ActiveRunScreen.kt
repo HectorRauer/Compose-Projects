@@ -46,14 +46,14 @@ import java.io.ByteArrayOutputStream
 
 @Composable
 fun ActiveRunScreenRoot(
-    viewModel: ActiveRunViewModel = koinViewModel(),
-    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
     onFinish: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onServiceToggle: (isServiceRunning: Boolean) -> Unit,
+    viewModel: ActiveRunViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     ObserveAsEvents(flow = viewModel.events) { event ->
-        when (event) {
+        when(event) {
             is ActiveRunEvent.Error -> {
                 Toast.makeText(
                     context,
@@ -61,25 +61,23 @@ fun ActiveRunScreenRoot(
                     Toast.LENGTH_LONG
                 ).show()
             }
-
             ActiveRunEvent.RunSaved -> onFinish()
         }
-
     }
     ActiveRunScreen(
         state = viewModel.state,
         onServiceToggle = onServiceToggle,
         onAction = { action ->
-            when (action) {
-                ActiveRunAction.OnBackClick -> {
-                    if (!viewModel.state.hasStartedRunning) {
+            when(action) {
+                is ActiveRunAction.OnBackClick -> {
+                    if(!viewModel.state.hasStartedRunning) {
                         onBack()
                     }
                 }
                 else -> Unit
             }
             viewModel.onAction(action)
-        },
+        }
     )
 }
 
@@ -141,15 +139,15 @@ private fun ActiveRunScreen(
         }
     }
 
-    LaunchedEffect(key1 = state.shouldTrack) {
-        if (context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
-            onServiceToggle(true)
+    LaunchedEffect(key1 = state.isRunFinished) {
+        if (state.isRunFinished) {
+            onServiceToggle(false)
         }
     }
 
-    LaunchedEffect(key1 = state.isRunFinished) {
-        if (!state.isRunFinished) {
-            onServiceToggle(false)
+    LaunchedEffect(key1 = state.shouldTrack) {
+        if (context.hasLocationPermission() && state.shouldTrack && !ActiveRunService.isServiceActive) {
+            onServiceToggle(true)
         }
     }
 
@@ -219,7 +217,7 @@ private fun ActiveRunScreen(
 
     if (!state.shouldTrack && state.hasStartedRunning) {
         JourneyDialog(
-            title = stringResource(id = R.string.runnning_is_paused),
+            title = stringResource(id = R.string.running_is_paused),
             onDismiss = {
                 onAction(ActiveRunAction.OnResumeRunClick)
             },
@@ -244,7 +242,6 @@ private fun ActiveRunScreen(
                     modifier = Modifier.weight(1f)
                 )
             }
-
         )
     }
 
@@ -272,7 +269,7 @@ private fun ActiveRunScreen(
                     onClick = {
                         onAction(ActiveRunAction.DismissRationaleDialog)
                         permissionLauncher.requestJourneyPermissions(context)
-                    }
+                    },
                 )
             }
         )
@@ -302,6 +299,7 @@ private fun ActivityResultLauncher<Array<String>>.requestJourneyPermissions(
         !hasNotificationPermission -> launch(notificationPermission)
     }
 }
+
 
 @Preview
 @Composable
