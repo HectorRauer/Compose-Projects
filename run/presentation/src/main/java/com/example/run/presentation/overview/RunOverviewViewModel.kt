@@ -27,6 +27,11 @@ class RunOverviewViewModel(
         viewModelScope.launch {
             runRepository.fetchRuns()
         }
+
+        viewModelScope.launch {
+            runRepository.syncPendingRuns()
+            runRepository.fetchRuns()
+        }
     }
     fun onAction(action: RunOverviewAction){
         when(action) {
