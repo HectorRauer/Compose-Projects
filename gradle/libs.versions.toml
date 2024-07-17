@@ -123,6 +123,7 @@ journey-android-library = { id = "journey.android.library", version = "unspecifi
 journey-android-library-compose = { id = "journey.android.library.compose", version = "unspecified" }
 journey-android-feature-ui = { id = "journey.android.feature.ui", version = "unspecified" }
 journey-android-room = { id = "journey.android.room", version = "unspecified" }
+journey-android-dynamic-feature = { id = "journey.android.dynamic.feature", version = "unspecified" }
 journey-jvm-library = { id = "journey.jvm.library", version = "unspecified" }
 journey-jvm-ktor = { id = "journey.jvm.ktor", version = "unspecified" }
 
