@@ -40,7 +40,7 @@ class JourneyApp: Application() {
                 databaseModule,
                 networkModule,
                 runViewModelModule,
-                runDataModule
+                runDataModule,
             )
         }
     }
