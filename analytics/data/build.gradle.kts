@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.journey.android.library)
+    alias(libs.plugins.journey.android.room)
 }
 
 android {

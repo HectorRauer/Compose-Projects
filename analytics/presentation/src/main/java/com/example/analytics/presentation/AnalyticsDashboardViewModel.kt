@@ -10,13 +10,13 @@ import kotlinx.coroutines.launch
 
 class AnalyticsDashboardViewModel(
     private val analyticsRepository: AnalyticsRepository
-): ViewModel() {
+) : ViewModel() {
     var state by mutableStateOf<AnalyticsDashboardState?>(null)
         private set
 
     init {
         viewModelScope.launch {
-        state = analyticsRepository.getAnalyticsValues().toAnalyticsDashboardState()
+            state = analyticsRepository.getAnalyticsValues().toAnalyticsDashboardState()
         }
     }
 }
